@@ -13,5 +13,7 @@ console.log(screens.length);
 console.log(`Стоимость верстки экранов ${screenPrice} долларов`);
 console.log(`Стоимость разработки сайта ${fullPrice} долларов`);
 
+ // В задании не указано на какой массив разделять так что 2 варианта
 console.log(screens.toLocaleLowerCase().split(""));
+console.log(screens.toLocaleLowerCase().split(", "));
 console.log(`Процент отката посреднику за работу ${fullPrice * (rollback/100)} `);
