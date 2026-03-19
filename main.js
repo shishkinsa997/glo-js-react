@@ -1,3 +1,6 @@
+const areDigits = (str) => /^\d+$/.test(str);
+const hasLetters = (str) => /[a-zA-Zа-яА-Я]/.test(str);
+
 const appData = {
   title: "",
   screens: [],
@@ -9,9 +12,6 @@ const appData = {
   servicePercentPrice: 0,
   services: [],
   asking: () => {
-    const areDigits = (str) => /^\d+$/.test(str);
-    const hasLetters = (str) => /[a-zA-Zа-яА-Я]/.test(str);
-
     do {
       appData.title = prompt("What is your project?", "Project");
     } while (!hasLetters(appData.title));
