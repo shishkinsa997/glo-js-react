@@ -1,70 +1,78 @@
 const appData = {
   title: "",
-  screens: "",
+  screens: [],
   screenPrice: 0,
   adaptive: true,
-  rollback: 20,
+  rollback: 10,
   allServicePrices: 0,
   fullPrice: 0,
   servicePercentPrice: 0,
-  service1: "",
-  service2: "",
+  services: [],
   asking: () => {
-    appData.title = prompt("What is your project?", "Project");
-    appData.screens = prompt(
-      "What types of screens need to develope?",
-      "Simple, Complex",
-    );
+    const areDigits = (str) => /^\d+$/.test(str);
+    const hasLetters = (str) => /[a-zA-Zа-яА-Я]/.test(str);
 
     do {
-      appData.screenPrice = parseFloat(
-        prompt("How much will this work cost?", 20000),
-      );
-    } while (!appData.isNumber(appData.screenPrice));
-
-    appData.screenPrice = parseFloat(appData.screenPrice);
+      appData.title = prompt("What is your project?", "Project");
+    } while (!hasLetters(appData.title));
 
     appData.adaptive = confirm("Will the site be adaptive?");
-  },
-  isNumber: (num) => {
-    return !isNaN(parseFloat(num)) && isFinite(parseFloat(num));
-  },
-  getAllServicePrices: () => {
-    let servicePrice;
-    let sum = 0;
+
     for (let i = 0; i < 2; i++) {
-      if (i === 0) {
-        appData.service1 = prompt(
+      let name, price;
+
+      do {
+        name = prompt("What types of screens need to develope?", "Simple");
+      } while (!hasLetters(name));
+
+      do {
+        price = prompt("How much will this work cost?", 10000);
+      } while (!areDigits(price));
+
+      price = +price;
+
+      appData.screens.push({ id: i, name, price });
+    }
+
+    for (let i = 0; i < 2; i++) {
+      let name, price;
+      do {
+        name = prompt(
           "What additional type of service is required?",
           "Packaging",
         );
-      } else if (i === 1) {
-        appData.service2 = prompt(
-          "What additional type of service is required?",
-          "Shipping",
-        );
-      }
+      } while (!hasLetters(name));
 
       do {
-        servicePrice = parseFloat(prompt("How much will it cost?", 1500));
-      } while (!appData.isNumber(servicePrice));
+        price = prompt("How much will it cost?", 1500);
+      } while (!areDigits(price));
 
-      sum += servicePrice;
+      price = +price;
+
+      appData.services.push({ id: i, name, price });
     }
-
-    return sum;
+  },
+  addPrices: () => {
+    appData.screenPrice = appData.screens.reduce(
+      (acc, screen) => (acc += +screen.price),
+      0,
+    );
+    appData.allServicePrices = appData.services.reduce(
+      (acc, screen) => (acc += +screen.price),
+      0,
+    );
   },
   getFullPrice: () => {
-    return appData.screenPrice + appData.allServicePrices;
+    appData.fullPrice = appData.screenPrice + appData.allServicePrices;
   },
   getServicePercentPrices: () => {
-    return Math.ceil(
+    appData.servicePercentPrice = Math.ceil(
       appData.fullPrice - appData.fullPrice * (appData.rollback / 100),
     );
   },
   getTitle: (title) => {
     title = title.trim().toLowerCase();
-    return title[0].toUpperCase() + title.slice(1);
+    appData.title = title[0].toUpperCase() + title.slice(1);
   },
   getRollBackMessage: (price) => {
     if (price > 3000) {
@@ -80,14 +88,33 @@ const appData = {
 
   start: () => {
     appData.asking();
-    appData.allServicePrices = appData.getAllServicePrices();
-    appData.fullPrice = appData.getFullPrice();
-    appData.servicePercentPrice = appData.getServicePercentPrices();
-    appData.title = appData.getTitle(appData.title);
+    appData.addPrices();
+    appData.getFullPrice();
+    appData.getServicePercentPrices();
+    appData.getTitle(appData.title);
     appData.logger();
   },
   logger: () => {
+    const logObj = (obj, indent = 0) => {
+      let res = "";
+      for (let key in obj) {
+        const val = obj[key];
+        if (typeof val === "object" && val !== null) {
+          res += " ".repeat(indent) + key + ":";
+          res += logObj(val, indent + 1);
+        } else {
+          res += " ".repeat(indent) + key + ": " + val + " ";
+        }
+      }
+      return res;
+    };
+
     for (let key in appData) {
+      if (typeof appData[key] === "object") {
+        console.log(key + ":");
+        console.log(logObj(appData[key]));
+        continue;
+      }
       if (typeof appData[key] === "function") {
         console.log(key + ": function() {}");
         continue;
