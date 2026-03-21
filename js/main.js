@@ -28,14 +28,9 @@ const appData = {
   servicesNumber: [],
   init: () => {
     appData.addTitle();
-    startBtn.addEventListener("click", () => {
-      if (appData.areScreensValid()) {
-        appData.start();
-      } else {
-        console.log("screens are empty");
-        appData.reset();
-      }
-    });
+    appData.handleStartButton();
+    screens[0].addEventListener("input", appData.handleStartButton);
+    startBtn.addEventListener("click", appData.start);
     screenBtn.addEventListener("click", appData.addScreenBlock);
     appData.addRollback();
   },
@@ -87,6 +82,8 @@ const appData = {
   addScreenBlock: function () {
     const cloneScreen = screens[0].cloneNode(true);
     screens[screens.length - 1].after(cloneScreen);
+    cloneScreen.addEventListener("input", appData.handleStartButton);
+    appData.handleStartButton();
   },
   addPrices: () => {
     appData.screenPrice = appData.screens.reduce(
@@ -133,9 +130,20 @@ const appData = {
       select = screen.querySelector("select").value;
       input = screen.querySelector("input").value;
 
-      return select === "" || input === "" || areDigits(input) === false;
+      return select === "" || input === "" || !areDigits(input);
     });
     return !result;
+  },
+  handleStartButton: () => {
+    if (!appData.areScreensValid()) {
+      startBtn.disabled = true;
+      startBtn.style.cursor = "not-allowed";
+      startBtn.style.opacity = "0.5";
+    } else {
+      startBtn.disabled = false;
+      startBtn.style.cursor = "pointer";
+      startBtn.style.opacity = "1";
+    }
   },
   start: () => {
     appData.reset();
