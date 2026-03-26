@@ -89,14 +89,12 @@ const appData = {
   },
 
   addRollback() {
-    const updateRollback = () => {
-      rollbackSpan.textContent = rollbackInput.value + "%";
-      this.rollback = +rollbackInput.value;
+    const updateRollback = function() {
+      rollbackSpan.textContent = this.value + "%";
+      appData.rollback = +this.value;
     };
-    updateRollback();
-    rollbackInput.addEventListener("input", () => {
-      updateRollback();
-    });
+    updateRollback.call(rollbackInput);
+    rollbackInput.addEventListener("input", updateRollback);
   },
 
   addScreenBlock() {
