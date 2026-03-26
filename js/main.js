@@ -12,6 +12,12 @@ const rollbackSpan = document.querySelector(".rollback span");
 const totalInputs = [...document.getElementsByClassName("total-input")];
 let screens = document.querySelectorAll(".screen");
 
+const cmsCheckbox = document.getElementById("cms-open");
+const cmsBlock = document.querySelector(".hidden-cms-variants");
+const cmsSelect = document.getElementById("cms-select");
+const cmsInputBlock = cmsBlock.querySelector(".main-controls__input");
+const cmsInput = cmsInputBlock.querySelector("input");
+
 const areDigits = (str) => /^\d+$/.test(str);
 
 const appData = {
@@ -26,6 +32,7 @@ const appData = {
   fullPrice: 0,
   servicesPercent: [],
   servicesNumber: [],
+  cmsValue: 0,
 
   init: function () {
     this.addTitle();
@@ -39,6 +46,7 @@ const appData = {
     });
     screenBtn.addEventListener("click", () => this.addScreenBlock());
     this.addRollback();
+    this.addCms();
   },
 
   addTitle() {
@@ -111,11 +119,44 @@ const appData = {
       0,
     );
 
+    this.cmsValue = !cmsCheckbox.checked
+      ? 0
+      : areDigits(cmsSelect.value)
+        ? cmsSelect.value
+        : cmsSelect.value === "other"
+          ? cmsInput.value
+          : 0;
+
+    this.rollback = +rollbackInput.value;
+
     this.fullPrice =
       this.screenPrice + this.servicePricesPercent + this.servicePricesNumber;
+    this.fullPrice += this.fullPrice * (this.cmsValue / 100);
 
     this.screenCount = this.screens.reduce((acc, { count }) => acc + count, 0);
   },
+  addCms() {
+    const showBlock = (el, show) => (el.style.display = show ? "flex" : "none");
+
+    cmsCheckbox.addEventListener("change", () => {
+      const isOpen = cmsCheckbox.checked;
+      showBlock(cmsBlock, isOpen);
+      cmsSelect.disabled = !isOpen;
+      showBlock(cmsInputBlock, false);
+      cmsSelect.value = "";
+      this.handleStartButton();
+    });
+
+    cmsSelect.addEventListener("change", () => {
+      const isOther = cmsSelect.value === "other";
+      showBlock(cmsInputBlock, isOther);
+      if (isOther) cmsInput.value = "";
+      this.handleStartButton();
+    });
+
+    cmsInput.addEventListener("input", () => this.handleStartButton());
+  },
+
   showResult() {
     totalInputs[0].value = this.screenPrice;
     totalInputs[1].value = this.screenCount;
@@ -125,18 +166,30 @@ const appData = {
       this.fullPrice - this.fullPrice * (this.rollback / 100),
     );
   },
-  areScreensValid() {
+  areInputsValid() {
     this.addScreens();
     let select, input;
-    return ![...screens].some((screen) => {
+    const areScreensValid = [...screens].every((screen) => {
       select = screen.querySelector("select").value;
       input = screen.querySelector("input").value;
 
-      return select === "" || input === "" || !areDigits(input);
+      return select !== "" && input !== "" && areDigits(input);
     });
+
+    const isCmsValid = () => {
+      if (cmsCheckbox.checked) {
+        if (cmsSelect.value === "other") {
+          return areDigits(cmsInput.value);
+        }
+        return areDigits(cmsSelect.value);
+      }
+      return true;
+    };
+
+    return areScreensValid && isCmsValid();
   },
   handleStartButton() {
-    if (!this.areScreensValid()) {
+    if (!this.areInputsValid()) {
       startBtn.disabled = true;
       startBtn.style.cursor = "default";
       startBtn.style.opacity = "0.5";
@@ -150,7 +203,7 @@ const appData = {
   handleForm(clear) {
     if (clear) {
       [...screens].slice(1).forEach((el) => el.remove());
-      
+
       screens[0].querySelector("input").disabled = false;
       screens[0].querySelector("input").value = "";
       screens[0].querySelector("select").disabled = false;
@@ -162,6 +215,12 @@ const appData = {
           checkbox.disabled = false;
           checkbox.checked = false;
         });
+
+      cmsBlock.style.display = "none";
+      cmsSelect.value = "";
+      cmsInputBlock.style.display = "none";
+      cmsInput.value = "";
+      cmsInput.disabled = false;
 
       rollbackInput.disabled = false;
       rollbackInput.value = 0;
@@ -187,6 +246,7 @@ const appData = {
       startBtn.style.display = "none";
     }
   },
+
   start() {
     this.reset();
     this.addScreens();
@@ -195,6 +255,7 @@ const appData = {
     this.showResult();
     this.handleForm();
   },
+
   reset(clear = false) {
     this.screens = [];
     this.screenPrice = 0;
@@ -204,6 +265,8 @@ const appData = {
     this.fullPrice = 0;
     this.servicesPercent = [];
     this.servicesNumber = [];
+    this.cmsValue = 0;
+    this.rollback = 0;
     this.handleForm(clear);
     this.showResult();
   },
