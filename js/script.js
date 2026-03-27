@@ -3,10 +3,7 @@ const headerInput = todoControl.querySelector(".header-input");
 const todoList = document.querySelector(".todo-list");
 const todoCompleted = document.querySelector(".todo-completed");
 
-const todoData = localStorage.getItem("todo")
-  ? JSON.parse(localStorage.getItem("todo"))
-  : [];
-
+const todoData = JSON.parse(localStorage.getItem("todo") || []);
 const save = () => {
   localStorage.setItem("todo", JSON.stringify(todoData));
 };
