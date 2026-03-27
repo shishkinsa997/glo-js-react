@@ -22,31 +22,48 @@ const DomElement = function (selector, height, width, bg, fontSize, text) {
         width: ${this.width}px;
         background: ${this.bg};
         font-size: ${this.fontSize};
+        position: absolute;
+        top: 50dvh;
+        left: 50dvw;
     `;
 
     return el;
   };
 };
 
-const div = new DomElement(
+const block = new DomElement(
   (selector = ".block"),
   (height = "100"),
   (width = "100"),
   (bg = "red"),
   (fontSize = "16"),
-  (text = "Я красный div"),
 ).create();
 
-const p = new DomElement(
-  (selector = "#best"),
-  (height = "50"),
-  (width = "150"),
-  (bg = "blue"),
-  (fontSize = "24"),
-  (text = "Я синий p"),
-).create();
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.append(block);
+  document.addEventListener("keydown", (e) => {
+    const key = e.key;
+    const step = 10
 
-console.log(div);
-console.log(p);
+    if (key === "ArrowUp") {
+      block.style.top = block.offsetTop - step + "px";
+      console.log("^");
+    }
 
-document.body.append(div, p);
+    if (key === "ArrowDown") {
+      block.style.top = block.offsetTop + step + "px";
+      console.log("v");
+    }
+
+    if (key === "ArrowLeft") {
+      block.style.left = block.offsetLeft - step + "px";
+      console.log("<");
+    }
+
+    if (key === "ArrowRight") {
+      block.style.left = block.offsetLeft + step + "px";
+      console.log(">");
+    }
+  });
+  console.log(block.offsetTop);
+});
