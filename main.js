@@ -26,44 +26,49 @@ const DomElement = function (selector, height, width, bg, fontSize, text) {
         top: 50dvh;
         left: 50dvw;
     `;
-
+    this.el = el;
     return el;
   };
 };
 
-const block = new DomElement(
-  (selector = ".block"),
-  (height = "100"),
-  (width = "100"),
-  (bg = "red"),
-  (fontSize = "16"),
-).create();
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.body.append(block);
+DomElement.prototype.move = function () {
   document.addEventListener("keydown", (e) => {
     const key = e.key;
-    const step = 10
+    const step = 10;
 
     if (key === "ArrowUp") {
-      block.style.top = block.offsetTop - step + "px";
+      this.el.style.top = this.el.offsetTop - step + "px";
       console.log("^");
     }
 
     if (key === "ArrowDown") {
-      block.style.top = block.offsetTop + step + "px";
+      this.el.style.top = this.el.offsetTop + step + "px";
       console.log("v");
     }
 
     if (key === "ArrowLeft") {
-      block.style.left = block.offsetLeft - step + "px";
+      this.el.style.left = this.el.offsetLeft - step + "px";
       console.log("<");
     }
 
     if (key === "ArrowRight") {
-      block.style.left = block.offsetLeft + step + "px";
+      this.el.style.left = this.el.offsetLeft + step + "px";
       console.log(">");
     }
   });
-  console.log(block.offsetTop);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const blockObj = new DomElement(
+    (selector = ".block"),
+    (height = "100"),
+    (width = "100"),
+    (bg = "red"),
+    (fontSize = "16"),
+  );
+
+  blockObj.move();
+  const block = blockObj.create();
+
+  document.body.append(block);
 });
