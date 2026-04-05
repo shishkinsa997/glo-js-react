@@ -6,7 +6,6 @@ const modal = () => {
 
   overlay.style.opacity = "0";
   modal.style.top = "30%";
-  console.log(window.innerWidth);
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
