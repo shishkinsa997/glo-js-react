@@ -9,12 +9,16 @@ const validate = () => {
   const form3 = document.querySelector("#form3");
 
   const textForm1 = form1.querySelectorAll('input[type="text"]');
-  const textForm2 = form2.querySelectorAll('input[type="text"], input[placeholder="Ваше сообщение"]');
+  const textForm2 = form2.querySelectorAll(
+    'input[type="text"], input[placeholder="Ваше сообщение"]',
+  );
   const textForm3 = form3.querySelectorAll('input[type="text"]');
 
   const textInputs = [...textForm1, ...textForm2, ...textForm3];
   const emailImputs = document.querySelectorAll('input[type="email"]');
   const phoneImputs = document.querySelectorAll('input[type="tel"]');
+
+  const allInputs = document.querySelectorAll("input");
 
   const handleInput = (isValid = false) => {
     if (!isValid) {
@@ -28,7 +32,9 @@ const validate = () => {
     this.value = this.value.replace(/\D/g, "");
   };
   const validateText = function () {
-    this.value = this.value.replace(/[^а-я\s-]/gi, "");
+    this.value = this.value.replace(/[^а-яА-ЯёЁ\s-]/g, "");
+    console.log('asd');
+
   };
   const validateEmail = function () {
     this.value = this.value.replace(/[^a-z@_.!~*'-]/gi, "");
@@ -49,6 +55,23 @@ const validate = () => {
   });
   phoneImputs.forEach((input) => {
     input.addEventListener("input", validatePhone);
+  });
+  allInputs.forEach((input) => {
+    input.addEventListener("blur", () => {
+      let val = input.value;
+      val = val.replace(/\s+/g, " ");
+      val = val.replace(/-+/g, "-");
+      val = val.replace(/^[-\s]+|[-\s]+$/g, "");
+      if (input.type === "text") {
+        val = val.replace(/\b[а-я]+\b/gi, (word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        });
+        val = val.split(' ').map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }).join(' ')
+      }
+      input.value = val;
+    });
   });
 };
 
