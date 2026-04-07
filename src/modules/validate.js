@@ -33,8 +33,6 @@ const validate = () => {
   };
   const validateText = function () {
     this.value = this.value.replace(/[^а-яА-ЯёЁ\s-]/g, "");
-    console.log('asd');
-
   };
   const validateEmail = function () {
     this.value = this.value.replace(/[^a-z@_.!~*'-]/gi, "");

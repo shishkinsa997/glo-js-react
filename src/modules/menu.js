@@ -1,9 +1,16 @@
 const menu = () => {
-  const menuBtn = document.querySelector(".menu");
+  const main = document.querySelector("main");
+
   const menu = document.querySelector("menu");
-  const closeBtn = menu.querySelector(".close-btn");
-  const menuItems = menu.querySelectorAll("ul>li>a");
   const scrollToNext = document.querySelector("a[href='#service-block']");
+
+  const overlay = document.createElement("div");
+  overlay.style.position = "absolute";
+  overlay.style.top = "0";
+  overlay.style.left = "-100%";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  menu.append(overlay);
 
   const sections = [
     ...document.querySelectorAll(
@@ -16,31 +23,35 @@ const menu = () => {
   };
 
   const animateScroll = (el) => {
-    const target = sections.find(
-      (section) => el.hash.slice(1) === section.id,
-    );
+    const target = sections.find((section) => el.hash.slice(1) === section.id);
     if (target) {
       target.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  menuBtn.addEventListener("click", handleMenu);
-
-  closeBtn.addEventListener("click", handleMenu);
-
-  scrollToNext.addEventListener("click", (e) => {
-    e.preventDefault();
-    animateScroll(scrollToNext)
+  main.addEventListener("click", (e) => {
+    if (e.target.closest(".menu")) {
+      handleMenu();
+      return;
+    }
+    if (e.target.closest("a[href='#service-block']")) {
+      e.preventDefault();
+      animateScroll(scrollToNext);
+    }
   });
 
-  menuItems.forEach((item) =>
-    item.addEventListener("click", (e) => {
+  menu.addEventListener("click", (e) => {
+    if (e.target.closest(".close-btn") || e.target === overlay) {
+      handleMenu();
+      return;
+    }
+    if (e.target.matches("ul>li>a")) {
       e.preventDefault();
 
       handleMenu();
-      animateScroll(item)
-    }),
-  );
+      animateScroll(e.target);
+    }
+  });
 };
 
 export default menu;

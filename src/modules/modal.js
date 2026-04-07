@@ -2,7 +2,6 @@ const modal = () => {
   const overlay = document.querySelector(".popup");
   const modal = document.querySelector(".popup-content");
   const buttons = document.querySelectorAll(".popup-btn");
-  const closeBtn = document.querySelector(".popup-close");
 
   overlay.style.opacity = "0";
   modal.style.top = "30%";
@@ -21,9 +20,11 @@ const modal = () => {
     });
   });
 
-  closeBtn.addEventListener("click", () => {
-    overlay.style.display = "none";
-    overlay.style.opacity = "0";
+  overlay.addEventListener("click", (e) => {
+    if (!e.target.closest(".popup-content") || e.target.classList.contains("popup-close")) {
+      overlay.style.display = "none";
+      overlay.style.opacity = "0";
+    }
   });
 };
 
