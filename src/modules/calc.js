@@ -29,11 +29,32 @@ const calc = (price = 100) => {
     if (calcType.value && calcSquare.value) {
       totalValue =
         price * calcTypeValue * calcSquareValue * calcCountValue * calcDayValue;
-      total.textContent = totalValue;
+      animateTotal(Math.round(totalValue));
     }
   };
 
-  calcBlock.addEventListener("change", (e) => {
+  const animateTotal = (end) => {
+    let start = +total.textContent;
+    const duration = 500;
+    const startTime = Date.now();
+    const delta = end - start;
+
+    const step = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const current = Math.floor(start + delta * progress);
+
+      total.textContent = current;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  calcBlock.addEventListener("change", () => {
     countCalc();
   });
 };
