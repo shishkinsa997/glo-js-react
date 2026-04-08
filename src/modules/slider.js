@@ -1,17 +1,50 @@
-const slider = () => {
-  const sliderBlock = document.querySelector(".portfolio-content");
-  const slides = sliderBlock.querySelectorAll(".portfolio-item");
-  const dots = sliderBlock.querySelector(".portfolio-dots");
-  const timeInterval = 2000;
+const slider = (
+  sliderBlockClass = "slider-block",
+  slidesClass = "slider-item",
+  dotsClass = "slider-dots",
+  activeSlideClass = "slide-active",
+  activeDotClass = "dot-active",
+  buttonClass = "slider-btn",
+  leftArrowId = "arrow-left",
+  rightArrowId = "arrow-right",
+  timeInterval = 2000,
+) => {
+  try {
+    const sliderBlock = document.querySelector(`.${sliderBlockClass}`);
+    const slides = sliderBlock.querySelectorAll(`.${slidesClass}`);
+    const dots = sliderBlock.querySelector(`.${dotsClass}`);
+    const sliderButtons = sliderBlock.querySelectorAll(`.${buttonClass}`);
+
+    const leftArrow = sliderBlock.querySelector(`#${leftArrowId}`);
+    const rightArrow = sliderBlock.querySelector(`#${rightArrowId}`);
+    if (
+      !sliderBlock ||
+      slides.length === 0 ||
+      !dots ||
+      sliderButtons.length === 0 ||
+      !leftArrow ||
+      !rightArrow
+    ) {
+      throw new Error("Slider elements not found");
+    }
+  } catch (error) {
+    console.error("Slider error:", error.message);
+    return;
+  }
+  const sliderBlock = document.querySelector(`.${sliderBlockClass}`);
+  const slides = sliderBlock.querySelectorAll(`.${slidesClass}`);
+  const dots = sliderBlock.querySelector(`.${dotsClass}`);
 
   const dot = document.createElement("li");
   dot.classList.add("dot");
   slides.forEach(() => {
     dots.append(dot.cloneNode());
-  })
+  });
 
-  const dotNodes = [...dots.childNodes].filter((node) => node.nodeName === "LI")
-  dotNodes[0].classList.add("dot-active");
+  const dotNodes = [...dots.childNodes].filter(
+    (node) => node.nodeName === "LI",
+  );
+  dotNodes[0].classList.add(activeDotClass);
 
   let currentSlide = 0;
   let interval;
@@ -24,14 +57,14 @@ const slider = () => {
     elems[index].classList.add(strClass);
   };
   const autoSlide = () => {
-    prevSlide(slides, currentSlide, "portfolio-item-active");
-    prevSlide(dotNodes, currentSlide, "dot-active");
+    prevSlide(slides, currentSlide, activeSlideClass);
+    prevSlide(dotNodes, currentSlide, activeDotClass);
     currentSlide++;
     if (currentSlide >= slides.length) {
       currentSlide = 0;
     }
-    nextSlide(slides, currentSlide, "portfolio-item-active");
-    nextSlide(dotNodes, currentSlide, "dot-active");
+    nextSlide(slides, currentSlide, activeSlideClass);
+    nextSlide(dotNodes, currentSlide, activeDotClass);
   };
 
   const startSlide = (timer = 1500) => {
@@ -44,16 +77,16 @@ const slider = () => {
 
   sliderBlock.addEventListener("click", (e) => {
     e.preventDefault();
-    if (!e.target.matches(".dot, .portfolio-btn")) {
+    if (!e.target.matches(`.dot, .${buttonClass}`)) {
       return;
     }
-    
-    prevSlide(slides, currentSlide, "portfolio-item-active");
-    prevSlide(dotNodes, currentSlide, "dot-active");
 
-    if (e.target.matches("#arrow-right")) {
+    prevSlide(slides, currentSlide, activeSlideClass);
+    prevSlide(dotNodes, currentSlide, activeDotClass);
+
+    if (e.target.matches(`#${rightArrowId}`)) {
       currentSlide++;
-    } else if (e.target.matches("#arrow-left")) {
+    } else if (e.target.matches(`#${leftArrowId}`)) {
       currentSlide--;
     } else if (e.target.classList.contains("dot")) {
       dotNodes.forEach((dot, index) => {
@@ -69,14 +102,14 @@ const slider = () => {
       currentSlide = slides.length - 1;
     }
 
-    nextSlide(slides, currentSlide, "portfolio-item-active");
-    nextSlide(dotNodes, currentSlide, "dot-active");
+    nextSlide(slides, currentSlide, activeSlideClass);
+    nextSlide(dotNodes, currentSlide, activeDotClass);
   });
 
   sliderBlock.addEventListener(
     "mouseenter",
     (e) => {
-      if (!e.target.matches(".dot, .portfolio-btn")) {
+      if (!e.target.matches(`.dot, .${buttonClass}`)) {
         return;
       }
       stopSlide();
@@ -87,7 +120,7 @@ const slider = () => {
   sliderBlock.addEventListener(
     "mouseleave",
     (e) => {
-      if (!e.target.matches(".dot, .portfolio-btn")) {
+      if (!e.target.matches(`.dot, .${buttonClass}`)) {
         return;
       }
       startSlide(timeInterval);
