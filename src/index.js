@@ -5,6 +5,7 @@ import validate from "./modules/validate";
 import tabs from "./modules/tabs";
 import slider from "./modules/slider";
 import sliderCarousel from "./modules/sliderCarousel";
+import calc from "./modules/calc";
 
 timer("April 5, 2026 01:10:00");
 menu();
@@ -23,3 +24,4 @@ slider(
   2000,
 );
 sliderCarousel();
+calc(100);
