@@ -11,7 +11,6 @@ menu();
 modal();
 validate();
 tabs();
-try {
 slider(
   "portfolio-content",
   "portfolio-item",
@@ -22,8 +21,5 @@ slider(
   "arrow-left",
   "arrow-right",
   2000,
-)
-} catch (e) {
-  console.error("Slider module error: ", e);
-}
+);
 sliderCarousel();
