@@ -1,3 +1,5 @@
+import { animate } from "./helpers";
+
 const modal = () => {
   const overlay = document.querySelector(".popup");
   const modal = document.querySelector(".popup-content");
@@ -15,40 +17,35 @@ const modal = () => {
         return;
       }
 
-      fadeIn(overlay, 300);
+      animate({
+        duration: 300,
+        timing(timeFraction) {
+          return timeFraction;
+        },
+        draw(progress) {
+          overlay.style.opacity = progress;
+        },
+      });
       overlay.style.display = "block";
     });
   });
 
   overlay.addEventListener("click", (e) => {
     if (!e.target.closest(".popup-content") || e.target.classList.contains("popup-close")) {
-      overlay.style.display = "none";
-      overlay.style.opacity = "0";
+      animate({
+        duration: 300,
+        timing(timeFraction) {
+          return timeFraction;
+        },
+        draw(progress) {
+          overlay.style.opacity = 1 - progress;
+        },
+      });
+      setTimeout(() => {
+        overlay.style.display = "none";
+      }, 300);
     }
   });
-};
-
-const fadeIn = (el, duration = 1000) => {
-  let start = null;
-  let startOpacity = 0;
-
-  el.style.opacity = 0;
-  el.style.display = "block";
-
-  function step(timestamp) {
-    if (!start) start = timestamp;
-
-    const elapsed = timestamp - start;
-    const progress = Math.min(elapsed / duration, 1);
-
-    el.style.opacity = startOpacity + (1 - startOpacity) * progress;
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    }
-  }
-
-  requestAnimationFrame(step);
 };
 
 export default modal;
